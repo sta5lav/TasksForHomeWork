@@ -19,7 +19,6 @@ public class ConcurrentBank {
     public void transfer(BankAccount a, BankAccount b, BigDecimal sum) {
         Lock firstLock = (a.getUuid().compareTo(b.getUuid()) < 0) ? a.LOCK : b.LOCK;
         Lock secondLock = (firstLock == a.LOCK) ? b.LOCK : a.LOCK;
-
         try {
             firstLock.lock();
             secondLock.lock();
@@ -28,7 +27,7 @@ public class ConcurrentBank {
             }
             a.withdraw(sum);
             b.deposit(sum);
-            System.out.println(Thread.currentThread());
+            System.out.println(Thread.currentThread().getName());
         } finally {
             firstLock.unlock();
             secondLock.unlock();

@@ -43,12 +43,12 @@ public class BankAccount {
 
     }
 
-    public BigDecimal getBalance() {
+    public synchronized BigDecimal getBalance() {
         return this.balance;
 
     }
 
-    public void setBalance(BigDecimal balance) {
+    public synchronized void setBalance(BigDecimal balance) {
         this.balance = balance;
     }
 

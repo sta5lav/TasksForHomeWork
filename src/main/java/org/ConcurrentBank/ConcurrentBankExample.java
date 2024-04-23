@@ -11,6 +11,7 @@ public class ConcurrentBankExample {
         BankAccount account2 = bank.createAccount(BigDecimal.valueOf(0));
 
         // Перевод между счетами
+
         Thread transferThread1 = new Thread(() -> bank.transfer(account1, account2, BigDecimal.valueOf(200)));
         Thread transferThread2 = new Thread(() -> bank.transfer(account2, account1, BigDecimal.valueOf(100)));
 
