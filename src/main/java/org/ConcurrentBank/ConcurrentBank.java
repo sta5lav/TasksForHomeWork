@@ -29,7 +29,7 @@ public class ConcurrentBank {
         }
 
         try {
-            if (a.getBalance().compareTo(sum) == -1) {
+            if (a.getBalance().compareTo(sum) < 0) {
                 throw new RuntimeException("Недостаточно средств");
             }
             a.withdraw(sum);
