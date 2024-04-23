@@ -5,13 +5,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class ConcurrentBank {
 
     private Map<UUID, BankAccount> accountList = new HashMap<>();
-
-    public final Lock LOCK = new ReentrantLock();
 
     public BankAccount createAccount(BigDecimal sum) {
         BankAccount bankAccount = new BankAccount(UUID.randomUUID(), sum);
@@ -20,15 +17,12 @@ public class ConcurrentBank {
     }
 
     public void transfer(BankAccount a, BankAccount b, BigDecimal sum) {
-        if (a.getUuid().compareTo(b.getUuid()) < 1) {
-            a.LOCK.lock();
-            b.LOCK.lock();
-        } else {
-            b.LOCK.lock();
-            a.LOCK.lock();
-        }
+        Lock firstLock = (a.getUuid().compareTo(b.getUuid()) < 0) ? a.LOCK : b.LOCK;
+        Lock secondLock = (firstLock == a.LOCK) ? b.LOCK : a.LOCK;
 
         try {
+            firstLock.lock();
+            secondLock.lock();
             if (a.getBalance().compareTo(sum) < 0) {
                 throw new RuntimeException("Недостаточно средств");
             }
@@ -36,8 +30,8 @@ public class ConcurrentBank {
             b.deposit(sum);
             System.out.println(Thread.currentThread());
         } finally {
-            a.LOCK.unlock();
-            b.LOCK.unlock();
+            firstLock.unlock();
+            secondLock.unlock();
         }
     }
 

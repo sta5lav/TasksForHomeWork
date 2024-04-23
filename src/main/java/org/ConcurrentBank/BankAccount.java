@@ -21,18 +21,26 @@ public class BankAccount {
 
 
     public void deposit(BigDecimal dep) {
-        LOCK.lock();
-        setBalance(getBalance().add(dep));
-        LOCK.unlock();
+        try {
+            LOCK.lock();
+            setBalance(getBalance().add(dep));
+        } finally {
+            LOCK.unlock();
+        }
+
     }
 
     public void withdraw(BigDecimal withdraw) {
-        LOCK.lock();
-        if (withdraw.compareTo(balance) == 1){
-            throw new RuntimeException("Недостаточно средств!");
+        try {
+            LOCK.lock();
+            if (withdraw.compareTo(balance) == 1) {
+                throw new RuntimeException("Недостаточно средств!");
+            }
+            setBalance(getBalance().subtract(withdraw));
+        } finally {
+            LOCK.unlock();
         }
-        setBalance(getBalance().subtract(withdraw));
-        LOCK.unlock();
+
     }
 
     public BigDecimal getBalance() {
@@ -41,9 +49,7 @@ public class BankAccount {
     }
 
     public void setBalance(BigDecimal balance) {
-        LOCK.lock();
         this.balance = balance;
-        LOCK.unlock();
     }
 
     public UUID getUuid() {
