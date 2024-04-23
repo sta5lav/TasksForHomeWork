@@ -7,7 +7,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class BankAccount {
 
-    public static final Lock LOCK = new ReentrantLock();
+    public final Lock LOCK = new ReentrantLock();
 
     private UUID uuid;
 
@@ -21,7 +21,9 @@ public class BankAccount {
 
 
     public void deposit(BigDecimal dep) {
+        LOCK.lock();
         setBalance(getBalance().add(dep));
+        LOCK.unlock();
     }
 
     public void withdraw(BigDecimal withdraw) {
@@ -35,10 +37,13 @@ public class BankAccount {
 
     public BigDecimal getBalance() {
         return this.balance;
+
     }
 
     public void setBalance(BigDecimal balance) {
+        LOCK.lock();
         this.balance = balance;
+        LOCK.unlock();
     }
 
     public UUID getUuid() {
