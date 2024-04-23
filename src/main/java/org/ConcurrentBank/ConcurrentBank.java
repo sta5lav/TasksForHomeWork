@@ -16,14 +16,14 @@ public class ConcurrentBank {
     }
 
     public void transfer(BankAccount a, BankAccount b, BigDecimal sum) {
-        if (a.getBalance().compareTo(sum) == -1) {
-            throw new RuntimeException("Недостаточно средств");
-        }
-
-        synchronized (a.LOCK) {
-            synchronized (b.LOCK) {
+        synchronized (a) {
+            synchronized (b) {
+                if (a.getBalance().compareTo(sum) == -1) {
+                    throw new RuntimeException("Недостаточно средств");
+                }
                 a.withdraw(sum);
                 b.deposit(sum);
+                System.out.println(Thread.currentThread());
             }
         }
     }

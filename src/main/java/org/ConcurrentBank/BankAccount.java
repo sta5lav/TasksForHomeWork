@@ -20,23 +20,24 @@ public class BankAccount {
     }
 
 
-    public synchronized void deposit(BigDecimal dep) {
+    public void deposit(BigDecimal dep) {
         setBalance(getBalance().add(dep));
     }
 
-    public synchronized void withdraw(BigDecimal withdraw) {
+    public void withdraw(BigDecimal withdraw) {
+        LOCK.lock();
         if (withdraw.compareTo(balance) == 1){
             throw new RuntimeException("Недостаточно средств!");
         }
         setBalance(getBalance().subtract(withdraw));
-
+        LOCK.unlock();
     }
 
-    public synchronized BigDecimal getBalance() {
+    public BigDecimal getBalance() {
         return this.balance;
     }
 
-    public synchronized void setBalance(BigDecimal balance) {
+    public void setBalance(BigDecimal balance) {
         this.balance = balance;
     }
 
