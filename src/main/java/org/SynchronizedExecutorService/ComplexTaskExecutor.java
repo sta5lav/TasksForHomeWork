@@ -15,7 +15,7 @@ public class ComplexTaskExecutor {
 
 
     public void executeTasks(int numberOfTasks) {
-        CyclicBarrier cyclicBarrier = new CyclicBarrier(4, () -> System.out.println("Thread working finished"));
+        CyclicBarrier cyclicBarrier = new CyclicBarrier(2, () -> System.out.println("Thread working finished"));
         for (ComplexTask s : listComplex) {
             s.createTask(numberOfTasks);
         }
@@ -28,6 +28,13 @@ public class ComplexTaskExecutor {
                 }
             });
 
+        }
+        try {
+            cyclicBarrier.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (BrokenBarrierException e) {
+            throw new RuntimeException(e);
         }
         /*for (ComplexTask s : listComplex) {
             for (int i = 0; i < numberOfTasks; i++) {
