@@ -24,7 +24,7 @@ public class Main {
 
         try {
             thread1.join();
-            thread2.join();
+            //thread2.join();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }

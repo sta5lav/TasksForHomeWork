@@ -5,17 +5,16 @@ import java.util.concurrent.*;
 
 public class ComplexTaskExecutor {
 
-
-
-    private ArrayList<ComplexTask> listComplex;
+    private final int countComplexTask;
 
     public ComplexTaskExecutor(int i) {
-        listComplex = addComplexTasks(i);
+        this.countComplexTask = i;
     }
 
-
     public void executeTasks(int numberOfTasks) {
-        CyclicBarrier cyclicBarrier = new CyclicBarrier(2, () -> System.out.println("Thread working finished"));
+        CyclicBarrier cyclicBarrier =
+                new CyclicBarrier(5);
+        ArrayList<ComplexTask> listComplex = addComplexTasks(cyclicBarrier);
         for (ComplexTask s : listComplex) {
             s.createTask(numberOfTasks);
         }
@@ -30,36 +29,19 @@ public class ComplexTaskExecutor {
 
         }
         try {
-            cyclicBarrier.await();
+            executorService.awaitTermination(2, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        } catch (BrokenBarrierException e) {
-            throw new RuntimeException(e);
+            Thread.currentThread().interrupt();
         }
-        /*for (ComplexTask s : listComplex) {
-            for (int i = 0; i < numberOfTasks; i++) {
-                int finalI = i;
-                executorService.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        s.execute(finalI);
-                    }
-                });
-            }
-
-        }*/
-
         executorService.shutdown();
-
-
 
     }
 
 
-    private ArrayList<ComplexTask> addComplexTasks(int i) {
+    private ArrayList<ComplexTask> addComplexTasks(CyclicBarrier cyclicBarrier) {
         ArrayList<ComplexTask> complexTasks = new ArrayList<>();
-        for (int j = 0; j < i; j++) {
-            complexTasks.add(new ComplexTask());
+        for (int j = 0; j < this.countComplexTask; j++) {
+            complexTasks.add(new ComplexTask(cyclicBarrier));
         }
         return complexTasks;
     }

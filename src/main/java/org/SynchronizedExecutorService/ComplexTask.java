@@ -10,10 +10,8 @@ public class ComplexTask implements Runnable{
 
     private CyclicBarrier cyclicBarrier;
 
-    ComplexTask() {}
-
-    public List<Task> getTasks() {
-        return this.tasks;
+    ComplexTask(CyclicBarrier cyclicBarrier) {
+        this.cyclicBarrier = cyclicBarrier;
     }
 
     public void createTask(int count) {
@@ -21,33 +19,22 @@ public class ComplexTask implements Runnable{
         for (int i = 0; i < count; i++) {
             tasks.add(new Task());
         }
-        this.cyclicBarrier = new CyclicBarrier(1, () -> System.out.println("Part is finished"));;
         this.tasks = tasks;
-    }
-
-    public void execute(int i) {
-        tasks.get(i).execute();
-        /*try {
-            cyclicBarrier.await();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        } catch (BrokenBarrierException e) {
-            throw new RuntimeException(e);
-        }*/
     }
 
     @Override
     public void run() {
         for (Task s : tasks) {
             s.execute();
+            try {
+                cyclicBarrier.await();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            } catch (BrokenBarrierException e) {
+                throw new RuntimeException(e);
+            }
         }
-        try {
-            cyclicBarrier.await();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        } catch (BrokenBarrierException e) {
-            throw new RuntimeException(e);
-        }
+
 
     }
 }
