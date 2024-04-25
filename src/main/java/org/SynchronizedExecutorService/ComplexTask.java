@@ -1,25 +1,53 @@
 package org.SynchronizedExecutorService;
 
 import java.util.*;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
 
-public class ComplexTask{
+public class ComplexTask implements Runnable{
 
-    private ArrayList<Task> tasks;
+    private ArrayList<Task> tasks = new ArrayList<>();
 
-    ComplexTask(int numberOfTasks) {
-        tasks = createTask(numberOfTasks);
+    private CyclicBarrier cyclicBarrier;
+
+    ComplexTask() {}
+
+    public List<Task> getTasks() {
+        return this.tasks;
     }
 
-    public ArrayList<Task> getTasks() {
-        return tasks;
-    }
-
-    private ArrayList<Task> createTask(int count) {
+    public void createTask(int count) {
         ArrayList<Task> tasks = new ArrayList<>();
         for (int i = 0; i < count; i++) {
             tasks.add(new Task());
         }
-        return tasks;
+        this.cyclicBarrier = new CyclicBarrier(1, () -> System.out.println("Part is finished"));;
+        this.tasks = tasks;
     }
 
+    public void execute(int i) {
+        tasks.get(i).execute();
+        /*try {
+            cyclicBarrier.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (BrokenBarrierException e) {
+            throw new RuntimeException(e);
+        }*/
+    }
+
+    @Override
+    public void run() {
+        for (Task s : tasks) {
+            s.execute();
+        }
+        try {
+            cyclicBarrier.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (BrokenBarrierException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
 }

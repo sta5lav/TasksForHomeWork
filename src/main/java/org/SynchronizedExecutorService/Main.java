@@ -1,8 +1,11 @@
 package org.SynchronizedExecutorService;
 
+
 public class Main {
     public static void main(String[] args) {
+
         ComplexTaskExecutor taskExecutor = new ComplexTaskExecutor(5); // Количество задач для выполнения
+
 
         Runnable testRunnable = () -> {
             System.out.println(Thread.currentThread().getName() + " started the test.");
